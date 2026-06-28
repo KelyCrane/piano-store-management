@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.piano.management.mapper.StudentCoursePackageMapper">
+
+    <select id="selectPageWithNames" resultType="com.piano.management.entity.StudentCoursePackage">
+        SELECT sp.*,
+               s.name AS student_name,
+               c.name AS course_name,
+               t.name AS teacher_name
+        FROM student_course_package sp
+                 LEFT JOIN sys_user s ON sp.student_id = s.id
+                 LEFT JOIN course c ON sp.course_id = c.id
+                 LEFT JOIN sys_user t ON sp.teacher_id = t.id
+        <where>
+            <if test="param.studentId != null">AND sp.student_id = #{param.studentId}</if>
+            <if test="param.teacherId != null">AND sp.teacher_id = #{param.teacherId}</if>
+            <if test="param.courseId != null">AND sp.course_id = #{param.courseId}</if>
+            <if test="param.status != null">AND sp.status = #{param.status}</if>
+            <if test="param.name != null and param.name != ''">AND sp.name LIKE CONCAT('%', #{param.name}, '%')</if>
+        </where>
+        ORDER BY sp.create_time DESC
+    </select>
+
+</mapper>

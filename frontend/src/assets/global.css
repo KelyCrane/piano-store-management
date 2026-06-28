@@ -1,0 +1,121 @@
+:root {
+  --primary-color: #6C5CE7;
+  --secondary-color: #A29BFE;
+  --accent-color: #FDCB6E;
+  --background-color: #F8F9FA;
+  --text-color: #2D3436;
+  --sidebar-bg: #2C3E50;
+  --sidebar-text: #ECF0F1;
+  --sidebar-active: #34495E;
+}
+
+body {
+  font-family: 'Helvetica Neue', Helvetica, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  background-color: var(--background-color);
+  color: var(--text-color);
+}
+
+/* Global Transitions */
+.fade-enter-active, .fade-leave-active {
+  transition: opacity 0.3s;
+}
+.fade-enter, .fade-leave-to {
+  opacity: 0;
+}
+
+/* Element UI Overrides */
+.el-button {
+  font-weight: 500;
+  border-radius: 6px; /* Slightly rounded */
+}
+.el-button--primary {
+  background-color: var(--primary-color);
+  border-color: var(--primary-color);
+}
+.el-button--primary:hover, .el-button--primary:focus {
+  background-color: #5b4cc4; /* Darker shade */
+  border-color: #5b4cc4;
+}
+
+.el-input__inner {
+  border-radius: 6px;
+  border: 1px solid #E4E7ED;
+  transition: all 0.3s;
+}
+.el-input__inner:focus {
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 2px rgba(108, 92, 231, 0.2);
+}
+
+.el-card {
+  border-radius: 8px;
+  border: none;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  transition: box-shadow 0.2s;
+}
+
+.el-table {
+  border-radius: 8px;
+  overflow: hidden;
+}
+.el-table th {
+  background-color: #F5F7FA !important;
+  color: #606266;
+  font-weight: 600;
+}
+
+.el-menu {
+  border-right: none !important;
+}
+
+/* Scrollbar Customization */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-thumb {
+  background: #C0C4CC;
+  border-radius: 4px;
+}
+::-webkit-scrollbar-track {
+  background: #F2F6FC;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #909399;
+}
+
+/* Utility Classes */
+.page-container {
+  padding: 20px;
+}
+.flex-center {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.text-primary {
+  color: var(--primary-color);
+}
+
+/* 表格操作列：多按钮同一行（抵消 Element 相邻按钮默认 margin） */
+.table-action-btns {
+  display: inline-flex;
+  flex-wrap: nowrap;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  white-space: nowrap;
+}
+.table-action-btns .el-button {
+  margin-left: 0 !important;
+  margin-right: 0 !important;
+}
+
+@media (max-width: 768px) {
+  .table-action-btns {
+    flex-wrap: wrap;
+    justify-content: flex-start;
+  }
+}

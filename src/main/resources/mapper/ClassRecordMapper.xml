@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.piano.management.mapper.ClassRecordMapper">
+
+    <select id="selectPageWithNames" resultType="com.piano.management.entity.ClassRecord">
+        SELECT r.*,
+               s.name AS student_name,
+               t.name AS teacher_name,
+               c.name AS course_name,
+               cr.name AS classroom_name
+        FROM class_record r
+        LEFT JOIN sys_user s ON r.student_id = s.id
+        LEFT JOIN sys_user t ON r.teacher_id = t.id
+        LEFT JOIN course c ON r.course_id = c.id
+        LEFT JOIN classroom cr ON r.classroom_id = cr.id
+        <where>
+            <if test="param.studentId != null">AND r.student_id = #{param.studentId}</if>
+            <if test="param.teacherId != null">AND r.teacher_id = #{param.teacherId}</if>
+        </where>
+        ORDER BY r.class_time DESC
+    </select>
+
+</mapper>

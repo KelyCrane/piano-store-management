@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.piano.management.mapper.CertificateMapper">
+
+    <select id="selectPageWithNames" resultType="com.piano.management.entity.Certificate">
+        SELECT c.*,
+               s.name AS student_name,
+               t.name AS teacher_name,
+               a.title AS activity_title
+        FROM certificate c
+        LEFT JOIN sys_user s ON c.student_id = s.id
+        LEFT JOIN sys_user t ON c.teacher_id = t.id
+        LEFT JOIN activity a ON c.activity_id = a.id
+        <where>
+            <if test="param.studentId != null">AND c.student_id = #{param.studentId}</if>
+            <if test="param.type != null and param.type != ''">AND c.type = #{param.type}</if>
+        </where>
+        ORDER BY c.obtain_time DESC
+    </select>
+
+</mapper>

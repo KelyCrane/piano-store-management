@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.piano.management.mapper.ActivityRegistrationMapper">
+
+    <select id="selectPageWithNames" resultType="com.piano.management.entity.ActivityRegistration">
+        SELECT ar.*,
+               COALESCE(NULLIF(TRIM(a.title), ''), a.name) AS activity_title,
+               a.type AS activity_type,
+               s.name AS student_name,
+               t.name AS teacher_name
+        FROM activity_registration ar
+        LEFT JOIN activity a ON ar.activity_id = a.id
+        LEFT JOIN sys_user s ON ar.student_id = s.id
+        LEFT JOIN sys_user t ON ar.teacher_id = t.id
+        <where>
+            <if test="param.activityId != null">AND ar.activity_id = #{param.activityId}</if>
+            <if test="param.activityType != null and param.activityType != ''">AND a.type = #{param.activityType}</if>
+            <if test="param.studentId != null">AND ar.student_id = #{param.studentId}</if>
+            <if test="param.teacherId != null">AND ar.teacher_id = #{param.teacherId}</if>
+            <if test="param.status != null">AND ar.status = #{param.status}</if>
+        </where>
+        ORDER BY ar.create_time DESC
+    </select>
+
+    <select id="selectParticipationByActivity" resultType="java.util.HashMap">
+        SELECT MAX(COALESCE(NULLIF(TRIM(a.name), ''), a.title, CONCAT('活动#', r.activity_id))) AS name,
+               COUNT(r.id) AS `count`
+        FROM activity_registration r
+        LEFT JOIN activity a ON r.activity_id = a.id
+        WHERE r.status NOT IN (2, 3)
+        GROUP BY r.activity_id
+        ORDER BY COUNT(r.id) DESC
+        LIMIT 30
+    </select>
+
+</mapper>

@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.piano.management.mapper.OrderInfoMapper">
+
+    <select id="selectPageWithNames" resultType="com.piano.management.entity.OrderInfo">
+        SELECT o.*,
+               s.name AS student_name,
+               CASE
+                   WHEN o.order_type = 'COURSE' THEN c.name
+                   WHEN o.order_type = 'ACTIVITY' THEN COALESCE(NULLIF(TRIM(a.title), ''), a.name)
+                   ELSE p.name
+               END AS product_name
+        FROM order_info o
+        LEFT JOIN sys_user s ON o.student_id = s.id
+        LEFT JOIN product p ON o.order_type NOT IN ('COURSE', 'ACTIVITY') AND o.product_id = p.id
+        LEFT JOIN course c ON o.order_type = 'COURSE' AND o.product_id = c.id
+        LEFT JOIN activity a ON o.order_type = 'ACTIVITY' AND o.product_id = a.id
+        <where>
+            <if test="param.studentId != null">AND o.student_id = #{param.studentId}</if>
+            <if test="param.orderType != null and param.orderType != ''">AND o.order_type = #{param.orderType}</if>
+            <if test="param.status != null">AND o.status = #{param.status}</if>
+        </where>
+        ORDER BY COALESCE(o.complete_time, o.pay_time, o.create_time) DESC
+    </select>
+
+    <select id="selectMonthlyIncome" resultType="java.util.Map">
+        SELECT DATE_FORMAT(pay_time, '%Y-%m') AS month,
+               SUM(actual_amount) AS income,
+               COUNT(*) AS order_count
+        FROM order_info
+        WHERE status = 1
+          AND pay_time IS NOT NULL
+          AND pay_time >= #{startDate}
+        GROUP BY DATE_FORMAT(pay_time, '%Y-%m')
+        ORDER BY month
+    </select>
+
+    <select id="selectPaidOverview" resultType="java.util.Map">
+        SELECT COALESCE(SUM(actual_amount), 0) AS total_amount,
+               COUNT(*) AS paid_order_count
+        FROM order_info
+        WHERE status = 1 AND pay_time IS NOT NULL
+    </select>
+
+    <select id="selectTopProductIncome" resultType="java.util.Map">
+        SELECT COALESCE(NULLIF(TRIM(p.name), ''), CONCAT('商品#', o.product_id)) AS name,
+               SUM(o.actual_amount) AS income,
+               COUNT(o.id) AS order_count
+        FROM order_info o
+        LEFT JOIN product p ON o.product_id = p.id
+        WHERE o.status = 1 AND o.pay_time IS NOT NULL AND o.product_id IS NOT NULL
+          AND o.order_type != 'COURSE'
+        GROUP BY o.product_id, p.name
+        ORDER BY income DESC
+        LIMIT 10
+    </select>
+
+    <select id="selectIncomeByType" resultType="java.util.Map">
+        SELECT order_type,
+               SUM(actual_amount) AS income
+        FROM order_info
+        WHERE status = 1
+          AND pay_time IS NOT NULL
+        GROUP BY order_type
+    </select>
+
+</mapper>

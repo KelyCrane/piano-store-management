@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.piano.management.mapper.CourseBookingMapper">
+
+    <select id="selectPageWithNames" resultType="com.piano.management.entity.CourseBooking">
+        SELECT cb.*,
+               s.name AS student_name,
+               t.name AS teacher_name,
+               c.name AS course_name,
+               cr.name AS classroom_name,
+               sp.name AS package_name,
+               sp.remaining_hours AS package_remaining_hours
+        FROM course_booking cb
+        LEFT JOIN sys_user s ON cb.student_id = s.id
+        LEFT JOIN sys_user t ON cb.teacher_id = t.id
+        LEFT JOIN course c ON cb.course_id = c.id
+        LEFT JOIN classroom cr ON cb.classroom_id = cr.id
+        LEFT JOIN student_course_package sp ON cb.student_package_id = sp.id
+        <where>
+            <if test="param.studentId != null">AND cb.student_id = #{param.studentId}</if>
+            <if test="param.teacherId != null">AND cb.teacher_id = #{param.teacherId}</if>
+            <if test="param.status != null">AND cb.status = #{param.status}</if>
+            <if test="param.dateFrom != null and param.dateFrom != ''">AND cb.class_time &gt;= CONCAT(#{param.dateFrom}, ' 00:00:00')</if>
+            <if test="param.dateTo != null and param.dateTo != ''">AND cb.class_time &lt;= CONCAT(#{param.dateTo}, ' 23:59:59')</if>
+        </where>
+        <choose>
+            <when test="param.sortMode != null and param.sortMode == 'schedule'">
+                ORDER BY CASE WHEN cb.class_time &gt;= NOW() THEN 0 ELSE 1 END ASC,
+                         CASE WHEN cb.class_time &gt;= NOW() THEN cb.class_time END ASC,
+                         CASE WHEN cb.class_time &lt; NOW() THEN cb.class_time END DESC,
+                         cb.create_time DESC
+            </when>
+            <otherwise>
+                ORDER BY cb.create_time DESC
+            </otherwise>
+        </choose>
+    </select>
+
+    <select id="selectBookingCountByStatus" resultType="java.util.HashMap">
+        SELECT status AS status,
+               COUNT(*) AS cnt
+        FROM course_booking
+        GROUP BY status
+    </select>
+
+</mapper>

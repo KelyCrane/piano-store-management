@@ -1,0 +1,9 @@
+package com.piano.management.mapper;
+
+import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.piano.management.entity.TeacherQualification;
+import org.apache.ibatis.annotations.Mapper;
+
+@Mapper
+public interface TeacherQualificationMapper extends BaseMapper<TeacherQualification> {
+}

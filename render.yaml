@@ -1,0 +1,21 @@
+services:
+  - type: web
+    name: piano-store-management
+    env: docker
+    dockerfilePath: ./Dockerfile
+    envVars:
+      - key: PORT
+        value: 8088
+      - key: SPRING_DATASOURCE_DRIVER
+        value: com.mysql.cj.jdbc.Driver
+      - key: SPRING_DATASOURCE_URL
+        sync: false
+      - key: SPRING_DATASOURCE_USERNAME
+        sync: false
+      - key: SPRING_DATASOURCE_PASSWORD
+        sync: false
+      - key: LOGGING_LEVEL
+        value: info
+      - key: FILE_UPLOAD_PATH
+        value: /app/uploads/
+    plan: free
